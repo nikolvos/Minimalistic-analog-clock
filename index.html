@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas id="my-canvas" width="500" height="500"></canvas>
+    <script src="https://code.createjs.com/1.0.0/easeljs.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <script>
+      window.onload = init;
+      let stage;
+      let secondAngle;
+      let minuteAngle;
+      let hourAngle;
+      let timeInSeconds;
+      let clock;
+      let seconds;
+      let middle;
+
+      let g = new createjs.Graphics();
+      function init() {
+        let queue = new createjs.LoadQueue();
+        stage = new createjs.Stage("my-canvas");
+
+        g.beginFill("beige");
+        g.drawCircle(250, 250, 250);
+        clock = new createjs.Shape(g);
+
+        stage.addChild(clock);
+
+        stage.update();
+
+        createjs.Ticker.addEventListener("tick", makeClockMove);
+        createjs.Ticker.framerate = 16;
+      }
+
+      function toSeconds(hours, minutes, seconds) {
+        return hours * 3600 + minutes * 60 + seconds;
+      }
+
+      function getCircleY(radians, radius) {
+        return Math.sin(radians) * radius;
+      }
+
+      function getCircleX(radians, radius) {
+        return Math.cos(radians) * radius;
+      }
+
+      function makeClockMove() {
+        g.clear();
+        g.beginFill("beige");
+        g.drawCircle(250, 250, 250);
+        clock = new createjs.Shape(g);
+
+        g.beginFill("black");
+        g.drawCircle(250, 250, 20);
+        middle = new createjs.Shape(g);
+
+        let today = new Date();
+        seconds = toSeconds(
+          today.getHours(),
+          today.getMinutes(),
+          today.getSeconds()
+        );
+
+        const rad = 0.0174532925;
+        const zeroDegrees = 270;
+        secondAngle = (zeroDegrees + seconds * 6) * rad;
+        minuteAngle = (zeroDegrees + seconds * 0.1) * rad;
+        hourAngle = (zeroDegrees + seconds * 0.00833333333) * rad;
+
+        g.beginStroke("black");
+        g.moveTo(0, 250);
+        g.lineTo(20, 250);
+        g.closePath();
+
+        g.beginStroke("black");
+        g.moveTo(500, 250);
+        g.lineTo(480, 250);
+        g.closePath();
+
+        g.beginStroke("black");
+        g.moveTo(250, 0);
+        g.lineTo(250, 20);
+        g.closePath();
+
+        g.beginStroke("black");
+        g.moveTo(250, 500);
+        g.lineTo(250, 480);
+        g.closePath();
+
+        g.beginStroke("red");
+        g.moveTo(250, 250);
+        g.lineTo(
+          250 + getCircleX(secondAngle, 220),
+          250 + getCircleY(secondAngle, 220)
+        );
+        g.closePath();
+        g.beginStroke("black").setStrokeStyle(2);
+        g.moveTo(250, 250);
+        g.lineTo(
+          250 + getCircleX(minuteAngle, 200),
+          250 + getCircleY(minuteAngle, 200)
+        );
+
+        g.beginStroke("black").setStrokeStyle(5);
+        g.moveTo(250, 250);
+        g.lineTo(
+          250 + getCircleX(hourAngle, 150),
+          250 + getCircleY(hourAngle, 150)
+        );
+
+        stage.update();
+      }
+    </script>
+  </body>
+</html>
